@@ -1,0 +1,104 @@
+<!--Beginning of custom_error_page.html-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!-- Force the browser not to cache the page -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Custom Error Page</title>
+    <style>
+        /* Import Roboto font */
+        @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+            /* Use Roboto font for all text */
+    body {
+        font-family: 'Roboto', sans-serif;
+        text-align: center; /* horizontally center the text */
+        display: flex; /* use flexbox to vertically center content */
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh; /* make the page take up the full viewport height */
+        overflow: hidden; /* hide any content that overflows the viewport */
+    }
+
+    /* Add header styles */
+    .header {
+        background-color: #59BAA8;
+        width: 100%;
+        height: 50px;
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+
+    /* Add footer styles */
+    .footer {
+        background-color: #59BAA8;
+        width: 100%;
+        height: 50px;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+    }
+
+    /* Increase text size */
+    h1 {
+        font-size: 30px; /* change font size to 3 rem */
+    }
+
+    p {
+        font-size: 25px; /* change font size to 1.5 rem */
+    }
+</style>
+<script>
+    // Define global variables
+    var url = '';
+    var retryInterval = 5000; // Retry every 5 seconds
+
+    // Function to get a URL parameter by name
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+
+    // Function to retry loading the page
+    function retryLoading() {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            // If the request is successful, reload the page
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                window.location.replace(url);
+            // If the request fails, try again after the retry interval
+            } else if (xhr.readyState == 4) {
+                setTimeout(retryLoading, retryInterval);
+            }
+        };
+        xhr.open("GET", url, true);
+        xhr.send();
+    }
+
+    // Function to execute when the page loads
+    window.onload = function() {
+        url = getUrlParameter('url');
+        retryLoading();
+        // Display the URL being retried
+        document.getElementById("url-display").textContent += url;
+    }
+</script>
+
+</head>
+
+<body>
+<div class="header"></div>
+<h1>Desconectado</h1> <!-- Disconnected -->
+<p id="url-display">Tentando reconexão com: </p> <!-- Trying to reconnect with -->
+<p>Aguarde...</p> <!-- Wait -->
+<div class="footer"></div>
+</body>
+
+</html>
+<!--End of custom_error_page.html-->
